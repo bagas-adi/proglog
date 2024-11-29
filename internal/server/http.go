@@ -7,25 +7,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewHTTPServer(addr string) *http.Server {
-	httpsrv := newHTTPServer()
-	r := mux.NewRouter()
-	r.HandleFunc("/", httpsrv.handleProduce).Methods("POST")
-	r.HandleFunc("/", httpsrv.handleConsume).Methods("GET")
-	return &http.Server{
-		Addr:    addr,
-		Handler: r,
-	}
-}
-
 type httpServer struct {
 	Log *Log
-}
-
-func newHTTPServer() *httpServer {
-	return &httpServer{
-		Log: NewLog(),
-	}
 }
 
 type ProduceRequest struct {
@@ -41,6 +24,22 @@ type ConsumeRequest struct {
 
 type ConsumeResponse struct {
 	Record Record `json:"record"`
+}
+
+func newHTTPServer() *httpServer {
+	return &httpServer{
+		Log: NewLog(),
+	}
+}
+func NewHTTPServer(addr string) *http.Server {
+	httpsrv := newHTTPServer()
+	r := mux.NewRouter()
+	r.HandleFunc("/", httpsrv.handleProduce).Methods("POST")
+	r.HandleFunc("/", httpsrv.handleConsume).Methods("GET")
+	return &http.Server{
+		Addr:    addr,
+		Handler: r,
+	}
 }
 
 func (s *httpServer) handleProduce(w http.ResponseWriter, r *http.Request) {
